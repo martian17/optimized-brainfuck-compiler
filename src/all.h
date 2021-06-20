@@ -42,10 +42,14 @@ EXP == 93
 #define FAILURE 1
 enum CMDFLAGS
 {
-    FLAG_E,
+    FLAG_EXEC,
     FLAG_VERSION,
     FLAG_HELP,
-    FLAG_FILE
+    FLAG_FILE,
+    FLAG_OUTFILE,
+    FLAG_INTERPRET,
+    FLAG_COMPILER,
+    FLAG_INTERPRETER
 };
 
 // memutils.c

@@ -41,34 +41,73 @@ int parseArgs(int argc, char **argv, char **flagargs){
         printf("(for debug only) %s\n",arg);
         if(arg[0] == '-'){
             if(arg[1] == '-'){
-                if(strcmp("--help",arg) == 0){
-                    flags |= 1<<FLAG_HELP;
-                }else{
-                    fprintf(stderr, "Unknown option detected %s\n",arg);
-                    flags |= 1<<FLAG_HELP;
+                // *********** Multi letter options here***********
+                if (strcmp("--help", arg) == 0){
+                    flags |= 1 << FLAG_HELP;
                 }
+                else if(strcmp("--compiler", arg) == 0){
+                    //specifies the conpiler
+                    flags |= 1 << FLAG_COMPILER;
+                    i_increment = 1;
+                    if (i + 1 >= argc){
+                        fprintf(stderr, "Expected an output filename after -o option\n");
+                        exit(FAILURE);
+                    }
+                    flagargs[FLAG_COMPILER] = argv[i + 1];
+                }
+                else if(strcmp("--interpreter", arg) == 0){
+                    //specifies the interpreter
+                    flags |= 1 << FLAG_INTERPRET;
+                    flags |= 1 << FLAG_INTERPRETER;
+                    i_increment = 1;
+                    if (i + 1 >= argc){
+                        fprintf(stderr, "Expected an output filename after -o option\n");
+                        exit(FAILURE);
+                    }
+                    flagargs[FLAG_INTERPRETER] = argv[i + 1];
+                }
+                else{
+                    fprintf(stderr, "Unknown option detected %s\n", arg);
+                    flags |= 1 << FLAG_HELP;
+                }
+                // *********** Multi letter options end***********
             }else{
                 int j = 1;
                 int i_increment = 0;
                 while(arg[j] != '\0'){
                     switch(arg[j]){
-                        case 'e'://directly execute
+                        // *********** Single letter options here***********
+                        case 'e': //directly execute
                             i_increment = 1;
                             //because the next arg is determined to be the code. don't want it to parse as a cmd argument
-                            if(i+1 >= argc){
+                            if (i + 1 >= argc){
                                 fprintf(stderr, "Expected an inline code after -e option\n");
                                 exit(FAILURE);
                             }
-                            flags |= 1<<FLAG_E;
-                            flagargs[FLAG_E] = argv[i+1];
+                            flags |= 1 << FLAG_EXEC;
+                            flagargs[FLAG_EXEC] = argv[i + 1];
                             break;
-                        case 'v'://display version
-                            flags |= 1<<FLAG_VERSION;
+                        case 'v': //display version
+                            flags |= 1 << FLAG_VERSION;
+                            break;
+                            case 'o': //specify output filename
+                            i_increment = 1;
+                            if (i + 1 >= argc){
+                                fprintf(stderr, "Expected an output filename after -o option\n");
+                                exit(FAILURE);
+                            }
+                            flags |= 1 << FLAG_OUTFILE;
+                            flagargs[FLAG_OUTFILE] = argv[i + 1];
+                            break;
+                        case 'i': //interpret mode
+                            flags |= 1 << FLAG_INTERPRET;
+                            flagargs[FLAG_OUTFILE] = argv[i + 1];
                             break;
                         //if there were other single char flags, we can add them here
                         default:
-                            fprintf(stderr, "Unknown option detected %s\n",arg);
-                            flags |= 1<<FLAG_HELP;
+                            fprintf(stderr, "Unknown option detected %s\n", arg);
+                            flags |= 1 << FLAG_HELP;
+                        // *********** Single letter options end***********
                     }
                     j++;
                 }
